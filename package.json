@@ -1,6 +1,6 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
+  "name": "get-versions-action",
+  "description": "Get various versions from CDI/FDI version",
   "version": "0.0.0",
   "author": "",
   "type": "module",

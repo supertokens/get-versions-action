@@ -27246,41 +27246,162 @@ function requireCore () {
 
 var coreExports = requireCore();
 
-/**
- * Waits for a number of milliseconds.
- *
- * @param milliseconds The number of milliseconds to wait.
- * @returns Resolves with 'done!' after the wait is over.
- */
-async function wait(milliseconds) {
-    return new Promise((resolve) => {
-        if (isNaN(milliseconds))
-            throw new Error('milliseconds is not a number');
-        setTimeout(() => resolve('done!'), milliseconds);
-    });
+function getInputs() {
+    return {
+        driverName: coreExports.getInput('driver-name', { required: true }),
+        cdiVersion: coreExports.getInput('cdi-version', { required: false }),
+        coreMode: coreExports.getInput('core-mode', { required: false }),
+        corePlanType: coreExports.getInput('core-plan-type', { required: false }),
+        frontendMode: coreExports.getInput('frontend-mode', { required: false }),
+        fdiVersion: coreExports.getInput('fdi-version', { required: false })
+    };
 }
-
-/**
- * The main function for the action.
- *
- * @returns Resolves when the action is complete.
- */
-async function run() {
-    try {
-        const ms = coreExports.getInput('milliseconds');
-        // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-        coreExports.debug(`Waiting ${ms} milliseconds ...`);
-        // Log the current timestamp, wait, then log the new timestamp
-        coreExports.debug(new Date().toTimeString());
-        await wait(parseInt(ms, 10));
-        coreExports.debug(new Date().toTimeString());
-        // Set outputs for other workflow steps to use
-        coreExports.setOutput('time', new Date().toTimeString());
+function ErrorFactory(params, dataDescription, response, statusCode) {
+    const paramStr = Object.entries(params)
+        .map(([key, val]) => `${key}=${val}`)
+        .join(', ');
+    return new Error(`Fetch ${dataDescription} for ${paramStr} yielded: ${response} with statusCode=${statusCode}`);
+}
+async function fetchWithApiKey({ url, params, description, outputKey }) {
+    const apiKey = process.env.SUPERTOKENS_API_KEY;
+    const queryParams = new URLSearchParams({
+        password: apiKey,
+        ...params
+    });
+    const response = await fetch(url + queryParams.toString());
+    if (!response.ok) {
+        throw ErrorFactory(params, description, await response.text(), response.status);
     }
-    catch (error) {
-        // Fail the workflow run if an error occurs
-        if (error instanceof Error)
-            coreExports.setFailed(error.message);
+    const responseData = (await response.json());
+    const data = responseData[outputKey];
+    if (!data) {
+        throw ErrorFactory(params, description, data, response.status);
+    }
+    return data;
+}
+function getFetchDetails(inputs) {
+    return {
+        coreVersion: (cdiVersion) => ({
+            url: 'https://api.supertokens.io/0/core-driver-interface/dependency/core/latest',
+            params: {
+                planType: inputs.corePlanType,
+                mode: inputs.coreMode,
+                driverName: inputs.driverName,
+                version: cdiVersion
+            },
+            description: 'core version',
+            outputKey: 'core'
+        }),
+        frontendVersionXY: (fdiVersion) => ({
+            url: 'https://api.supertokens.io/0/frontend-driver-interface/dependency/frontend/latest',
+            params: {
+                frontendName: 'website',
+                mode: inputs.frontendMode,
+                driverName: inputs.driverName,
+                version: fdiVersion
+            },
+            description: 'frontend X.Y version',
+            outputKey: 'frontend'
+        }),
+        frontendTag: (frontendVersionXY) => ({
+            url: 'https://api.supertokens.io/0/driver/latest',
+            params: {
+                mode: inputs.frontendMode,
+                name: 'website',
+                version: frontendVersionXY
+            },
+            description: 'frontend X.Y.Z version tag',
+            outputKey: 'tag'
+        }),
+        frontendVersion: (frontendVersionXY) => ({
+            url: 'https://api.supertokens.io/0/driver/latest',
+            params: {
+                mode: inputs.frontendMode,
+                name: 'website',
+                version: frontendVersionXY
+            },
+            description: 'frontend X.Y.Z version',
+            outputKey: 'version'
+        }),
+        nodeVersionXY: (fdiVersion) => ({
+            url: 'https://api.supertokens.io/0/frontend-driver-interface/dependency/driver/latest',
+            params: {
+                frontendName: 'auth-react',
+                mode: inputs.frontendMode,
+                driverName: 'node',
+                version: fdiVersion
+            },
+            description: 'node driver X.Y version',
+            outputKey: 'driver'
+        }),
+        nodeTag: (nodeVersionXY) => ({
+            url: 'https://api.supertokens.io/0/driver/latest',
+            params: {
+                mode: inputs.frontendMode,
+                name: 'node',
+                version: nodeVersionXY
+            },
+            description: 'node X.Y.Z version tag',
+            outputKey: 'tag'
+        }),
+        authReactVersionXY: (fdiVersion) => ({
+            url: 'https://api.supertokens.io/0/frontend-driver-interface/dependency/frontend/latest',
+            params: {
+                frontendName: 'auth-react',
+                mode: inputs.frontendMode,
+                driverName: inputs.driverName,
+                version: fdiVersion
+            },
+            description: 'auth-react frontend driver X.Y version',
+            outputKey: 'frontend'
+        }),
+        authReactTag: (authReactVersionXY) => ({
+            url: 'https://api.supertokens.io/0/driver/latest',
+            params: {
+                mode: inputs.frontendMode,
+                name: 'auth-react',
+                version: authReactVersionXY
+            },
+            description: 'auth-react frontend X.Y version tag',
+            outputKey: 'tag'
+        }),
+        authReactVersion: (authReactVersionXY) => ({
+            url: 'https://api.supertokens.io/0/driver/latest',
+            params: {
+                mode: inputs.frontendMode,
+                name: 'auth-react',
+                version: authReactVersionXY
+            },
+            description: 'auth-react frontend X.Y version',
+            outputKey: 'version'
+        })
+    };
+}
+async function run() {
+    const inputs = getInputs();
+    const { fdiVersion, cdiVersion } = inputs;
+    const fetchDetails = getFetchDetails(inputs);
+    if (cdiVersion) {
+        const coreVersion = await fetchWithApiKey(fetchDetails.coreVersion(cdiVersion));
+        coreExports.setOutput('core-version', coreVersion);
+    }
+    if (fdiVersion) {
+        const frontendVersionXY = await fetchWithApiKey(fetchDetails.frontendVersionXY(fdiVersion));
+        coreExports.setOutput('frontend-version-xy', frontendVersionXY);
+        const frontendTag = await fetchWithApiKey(fetchDetails.frontendTag(frontendVersionXY));
+        coreExports.setOutput('frontend-tag', frontendTag);
+        const frontendVersion = await fetchWithApiKey(fetchDetails.frontendVersion(frontendVersionXY));
+        coreExports.setOutput('frontend-version', frontendVersion);
+        const nodeVersionXY = await fetchWithApiKey(fetchDetails.nodeVersionXY(fdiVersion));
+        coreExports.setOutput('node-version-xy', nodeVersionXY);
+        const nodeTag = await fetchWithApiKey(fetchDetails.nodeTag(nodeVersionXY));
+        coreExports.setOutput('node-tag', nodeTag);
+        const authReactVersionXY = await fetchWithApiKey(fetchDetails.authReactVersionXY(fdiVersion));
+        coreExports.setOutput('auth-react-version-xy', authReactVersionXY);
+        const authReactTag = await fetchWithApiKey(fetchDetails.authReactTag(authReactVersionXY));
+        coreExports.setOutput('auth-react-tag', authReactTag);
+        const authReactVersion = await fetchWithApiKey(fetchDetails.authReactVersion(authReactVersionXY));
+        coreExports.setOutput('auth-react-version', authReactVersion);
     }
 }
 
@@ -27288,6 +27409,13 @@ async function run() {
  * The entrypoint for the action. This file simply imports and runs the action's
  * main logic.
  */
-/* istanbul ignore next */
-run();
+try {
+    /* istanbul ignore next */
+    run();
+}
+catch (error) {
+    // Fail the workflow run if an error occurs
+    if (error instanceof Error)
+        coreExports.setFailed(error.message);
+}
 //# sourceMappingURL=index.js.map
