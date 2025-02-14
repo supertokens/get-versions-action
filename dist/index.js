@@ -27268,7 +27268,9 @@ async function fetchWithApiKey({ url, params, description, outputKey }) {
         password: apiKey,
         ...params
     });
-    const response = await fetch(url + queryParams.toString());
+    const urlObj = new URL(url);
+    urlObj.search = queryParams.toString();
+    const response = await fetch(urlObj);
     if (!response.ok) {
         throw ErrorFactory(params, description, await response.text(), response.status);
     }
@@ -27282,7 +27284,7 @@ async function fetchWithApiKey({ url, params, description, outputKey }) {
 function getFetchDetails(inputs) {
     return {
         coreVersion: (cdiVersion) => ({
-            url: 'https://api.supertokens.io/0/core-driver-interface/dependency/core/latest',
+            url: 'https://api.supertokens.io/0/core-driver-interface/dependency/core/latest/',
             params: {
                 planType: inputs.corePlanType,
                 mode: inputs.coreMode,
@@ -27293,7 +27295,7 @@ function getFetchDetails(inputs) {
             outputKey: 'core'
         }),
         frontendVersionXY: (fdiVersion) => ({
-            url: 'https://api.supertokens.io/0/frontend-driver-interface/dependency/frontend/latest',
+            url: 'https://api.supertokens.io/0/frontend-driver-interface/dependency/frontend/latest/',
             params: {
                 frontendName: 'website',
                 mode: inputs.frontendMode,
@@ -27304,7 +27306,7 @@ function getFetchDetails(inputs) {
             outputKey: 'frontend'
         }),
         frontendTag: (frontendVersionXY) => ({
-            url: 'https://api.supertokens.io/0/driver/latest',
+            url: 'https://api.supertokens.io/0/driver/latest/',
             params: {
                 mode: inputs.frontendMode,
                 name: 'website',
@@ -27314,7 +27316,7 @@ function getFetchDetails(inputs) {
             outputKey: 'tag'
         }),
         frontendVersion: (frontendVersionXY) => ({
-            url: 'https://api.supertokens.io/0/driver/latest',
+            url: 'https://api.supertokens.io/0/driver/latest/',
             params: {
                 mode: inputs.frontendMode,
                 name: 'website',
@@ -27324,7 +27326,7 @@ function getFetchDetails(inputs) {
             outputKey: 'version'
         }),
         nodeVersionXY: (fdiVersion) => ({
-            url: 'https://api.supertokens.io/0/frontend-driver-interface/dependency/driver/latest',
+            url: 'https://api.supertokens.io/0/frontend-driver-interface/dependency/driver/latest/',
             params: {
                 frontendName: 'auth-react',
                 mode: inputs.frontendMode,
@@ -27335,7 +27337,7 @@ function getFetchDetails(inputs) {
             outputKey: 'driver'
         }),
         nodeTag: (nodeVersionXY) => ({
-            url: 'https://api.supertokens.io/0/driver/latest',
+            url: 'https://api.supertokens.io/0/driver/latest/',
             params: {
                 mode: inputs.frontendMode,
                 name: 'node',
@@ -27345,7 +27347,7 @@ function getFetchDetails(inputs) {
             outputKey: 'tag'
         }),
         authReactVersionXY: (fdiVersion) => ({
-            url: 'https://api.supertokens.io/0/frontend-driver-interface/dependency/frontend/latest',
+            url: 'https://api.supertokens.io/0/frontend-driver-interface/dependency/frontend/latest/',
             params: {
                 frontendName: 'auth-react',
                 mode: inputs.frontendMode,
@@ -27356,7 +27358,7 @@ function getFetchDetails(inputs) {
             outputKey: 'frontend'
         }),
         authReactTag: (authReactVersionXY) => ({
-            url: 'https://api.supertokens.io/0/driver/latest',
+            url: 'https://api.supertokens.io/0/driver/latest/',
             params: {
                 mode: inputs.frontendMode,
                 name: 'auth-react',
@@ -27366,7 +27368,7 @@ function getFetchDetails(inputs) {
             outputKey: 'tag'
         }),
         authReactVersion: (authReactVersionXY) => ({
-            url: 'https://api.supertokens.io/0/driver/latest',
+            url: 'https://api.supertokens.io/0/driver/latest/',
             params: {
                 mode: inputs.frontendMode,
                 name: 'auth-react',
