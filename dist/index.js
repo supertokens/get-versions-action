@@ -27294,32 +27294,32 @@ function getFetchDetails(inputs) {
             description: 'core X.Y version',
             outputKey: 'core'
         }),
-        coreTag: (coreVersionXY) => ({
+        coreTag: (coreVersionXy) => ({
             url: 'https://api.supertokens.io/0/core/latest',
             params: {
                 planType: inputs.corePlanType,
                 mode: inputs.coreMode,
-                version: coreVersionXY
+                version: coreVersionXy
             },
             description: 'core tag',
             outputKey: 'tag'
         }),
-        coreVersion: (coreVersionXY) => ({
+        coreVersion: (coreVersionXy) => ({
             url: 'https://api.supertokens.io/0/core/latest',
             params: {
                 planType: inputs.corePlanType,
                 mode: inputs.coreMode,
-                version: coreVersionXY
+                version: coreVersionXy
             },
             description: 'core version',
             outputKey: 'version'
         }),
-        pluginInterfaceVersionXy: (cdiVersion) => ({
+        pluginInterfaceVersionXy: (coreVersionXy) => ({
             url: 'https://api.supertokens.io/0/core/dependency/plugin-interface/latest',
             params: {
                 planType: inputs.corePlanType,
                 mode: inputs.coreMode,
-                version: cdiVersion
+                version: coreVersionXy
             },
             description: 'plugin-interface X.Y version',
             outputKey: 'pluginInterface'
@@ -27443,7 +27443,7 @@ async function run() {
         const coreVersion = await fetchWithApiKey(fetchDetails.coreVersion(coreVersionXy));
         coreExports.setOutput('coreVersion', coreVersion);
         coreExports.info(`coreVersion=${coreVersion}`);
-        const pluginInterfaceVersionXy = await fetchWithApiKey(fetchDetails.pluginInterfaceVersionXy(cdiVersion));
+        const pluginInterfaceVersionXy = await fetchWithApiKey(fetchDetails.pluginInterfaceVersionXy(coreVersionXy));
         coreExports.setOutput('pluginInterfaceVersionXy', pluginInterfaceVersionXy);
         coreExports.info(`pluginInterfaceVersionXy=${pluginInterfaceVersionXy}`);
         const pluginInterfaceTag = await fetchWithApiKey(fetchDetails.pluginInterfaceTag(pluginInterfaceVersionXy));

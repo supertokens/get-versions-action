@@ -92,33 +92,33 @@ function getFetchDetails(inputs: InputType) {
       description: 'core X.Y version',
       outputKey: 'core'
     }),
-    coreTag: (coreVersionXY: string) => ({
+    coreTag: (coreVersionXy: string) => ({
       url: 'https://api.supertokens.io/0/core/latest',
       params: {
         planType: inputs.corePlanType,
         mode: inputs.coreMode,
-        version: coreVersionXY
+        version: coreVersionXy
       },
       description: 'core tag',
       outputKey: 'tag'
     }),
-    coreVersion: (coreVersionXY: string) => ({
+    coreVersion: (coreVersionXy: string) => ({
       url: 'https://api.supertokens.io/0/core/latest',
       params: {
         planType: inputs.corePlanType,
         mode: inputs.coreMode,
-        version: coreVersionXY
+        version: coreVersionXy
       },
       description: 'core version',
       outputKey: 'version'
     }),
 
-    pluginInterfaceVersionXy: (cdiVersion: string) => ({
+    pluginInterfaceVersionXy: (coreVersionXy: string) => ({
       url: 'https://api.supertokens.io/0/core/dependency/plugin-interface/latest',
       params: {
         planType: inputs.corePlanType,
         mode: inputs.coreMode,
-        version: cdiVersion
+        version: coreVersionXy
       },
       description: 'plugin-interface X.Y version',
       outputKey: 'pluginInterface'
@@ -255,7 +255,7 @@ export async function run(): Promise<void> {
     core.info(`coreVersion=${coreVersion}`)
 
     const pluginInterfaceVersionXy = await fetchWithApiKey(
-      fetchDetails.pluginInterfaceVersionXy(cdiVersion)
+      fetchDetails.pluginInterfaceVersionXy(coreVersionXy)
     )
     core.setOutput('pluginInterfaceVersionXy', pluginInterfaceVersionXy)
     core.info(`pluginInterfaceVersionXy=${pluginInterfaceVersionXy}`)
