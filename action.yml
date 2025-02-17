@@ -39,37 +39,54 @@ inputs:
 
 outputs:
   coreVersionXy:
-    description: Supertokens-core version corresponding to CDI version
+    description:
+      Latest supertokens-core X.Y version corresponding to CDI version
   coreTag:
-    description: ''
+    description:
+      Latest supertokens-core tag corresponding to supertokens-core X.Y version
   coreVersion:
-    description: ''
+    description:
+      Latest supertokens-core X.Y.Z version corresponding to supertokens-core
+      X.Y version
 
   pluginInterfaceVersionXy:
-    description: ''
+    description:
+      Latest supertokens-plugin-interface X.Y version corresponding to
+      supertokens-core X.Y version
   pluginInterfaceTag:
-    description: ''
+    description:
+      Latest supertokens-plugin-interface tag corresponding to
+      supertokens-plugin-interface X.Y version
   pluginInterfacVersion:
-    description: ''
+    description:
+      Latest supertokens-plugin-interface X.Y.Z version corresponding to
+      supertokens-plugin-interface X.Y version
 
   frontendVersionXy:
-    description: ''
+    description:
+      Latest website-frontend X.Y version corresponding to FDI version
   frontendTag:
-    description: ''
+    description:
+      Latest website-frontend tag corresponding to website-frontend X.Y version
   frontendVersion:
-    description: ''
+    description:
+      Latest website-frontend X.Y.Z version corresponding to website-frontend
+      X.Y version
 
   nodeVersionXy:
-    description: ''
+    description:
+      Latest Node X.Y version corresponding to FDI version for use in auth-react
   nodeTag:
-    description: ''
+    description:
+      Latest Node tag corresponding to Node X.Y version for use in auth-react
 
   authReactVersionXy:
-    description: ''
+    description: Latest auth-react X.Y version corresponding to FDI version
   authReactTag:
-    description: ''
+    description: Latest auth-react tag corresponding to auth-react X.Y version
   authReactVersion:
-    description: ''
+    description:
+      Latest auth-react X.Y.Z version corresponding to auth-react X.Y version
 
 runs:
   using: node20

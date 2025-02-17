@@ -27355,22 +27355,22 @@ function getFetchDetails(inputs) {
             description: 'frontend X.Y version',
             outputKey: 'frontend'
         }),
-        frontendTag: (frontendVersionXY) => ({
+        frontendTag: (frontendVersionXy) => ({
             url: 'https://api.supertokens.io/0/driver/latest/',
             params: {
                 mode: inputs.frontendMode,
                 name: 'website',
-                version: frontendVersionXY
+                version: frontendVersionXy
             },
             description: 'frontend X.Y.Z version tag',
             outputKey: 'tag'
         }),
-        frontendVersion: (frontendVersionXY) => ({
+        frontendVersion: (frontendVersionXy) => ({
             url: 'https://api.supertokens.io/0/driver/latest/',
             params: {
                 mode: inputs.frontendMode,
                 name: 'website',
-                version: frontendVersionXY
+                version: frontendVersionXy
             },
             description: 'frontend X.Y.Z version',
             outputKey: 'version'
@@ -27386,12 +27386,12 @@ function getFetchDetails(inputs) {
             description: 'node driver X.Y version',
             outputKey: 'driver'
         }),
-        nodeTag: (nodeVersionXY) => ({
+        nodeTag: (nodeVersionXy) => ({
             url: 'https://api.supertokens.io/0/driver/latest/',
             params: {
                 mode: inputs.frontendMode,
                 name: 'node',
-                version: nodeVersionXY
+                version: nodeVersionXy
             },
             description: 'node X.Y.Z version tag',
             outputKey: 'tag'
@@ -27407,22 +27407,22 @@ function getFetchDetails(inputs) {
             description: 'auth-react frontend driver X.Y version',
             outputKey: 'frontend'
         }),
-        authReactTag: (authReactVersionXY) => ({
+        authReactTag: (authReactVersionXy) => ({
             url: 'https://api.supertokens.io/0/driver/latest/',
             params: {
                 mode: inputs.frontendMode,
                 name: 'auth-react',
-                version: authReactVersionXY
+                version: authReactVersionXy
             },
             description: 'auth-react frontend X.Y version tag',
             outputKey: 'tag'
         }),
-        authReactVersion: (authReactVersionXY) => ({
+        authReactVersion: (authReactVersionXy) => ({
             url: 'https://api.supertokens.io/0/driver/latest/',
             params: {
                 mode: inputs.frontendMode,
                 name: 'auth-react',
-                version: authReactVersionXY
+                version: authReactVersionXy
             },
             description: 'auth-react frontend X.Y version',
             outputKey: 'version'
