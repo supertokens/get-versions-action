@@ -81,7 +81,7 @@ async function fetchWithApiKey({
 
 function getFetchDetails(inputs: InputType) {
   return {
-    coreVersion: (cdiVersion: string) => ({
+    coreVersionXy: (cdiVersion: string) => ({
       url: 'https://api.supertokens.io/0/core-driver-interface/dependency/core/latest/',
       params: {
         planType: inputs.corePlanType,
@@ -89,10 +89,62 @@ function getFetchDetails(inputs: InputType) {
         driverName: inputs.driverName,
         version: cdiVersion
       },
-      description: 'core version',
+      description: 'core X.Y version',
       outputKey: 'core'
     }),
-    frontendVersionXY: (fdiVersion: string) => ({
+    coreTag: (coreVersionXY: string) => ({
+      url: 'https://api.supertokens.io/0/core/latest',
+      params: {
+        planType: inputs.corePlanType,
+        mode: inputs.coreMode,
+        version: coreVersionXY
+      },
+      description: 'core tag',
+      outputKey: 'tag'
+    }),
+    coreVersion: (coreVersionXY: string) => ({
+      url: 'https://api.supertokens.io/0/core/latest',
+      params: {
+        planType: inputs.corePlanType,
+        mode: inputs.coreMode,
+        version: coreVersionXY
+      },
+      description: 'core version',
+      outputKey: 'version'
+    }),
+
+    pluginInterfaceVersionXy: (cdiVersion: string) => ({
+      url: 'https://api.supertokens.io/0/core/dependency/plugin-interface/latest',
+      params: {
+        planType: inputs.corePlanType,
+        mode: inputs.coreMode,
+        version: cdiVersion
+      },
+      description: 'plugin-interface X.Y version',
+      outputKey: 'pluginInterface'
+    }),
+    pluginInterfaceTag: (pluginInterfaceVersionXY: string) => ({
+      url: 'https://api.supertokens.io/0/plugin-interface/latest',
+      params: {
+        planType: inputs.corePlanType,
+        mode: inputs.coreMode,
+        version: pluginInterfaceVersionXY
+      },
+      description: 'plugin-interface tag',
+      outputKey: 'tag'
+    }),
+    pluginInterfaceVersion: (pluginInterfaceVersionXY: string) => ({
+      url: 'https://api.supertokens.io/0/plugin-interface/latest',
+      params: {
+        planType: inputs.corePlanType,
+        mode: inputs.coreMode,
+        version: pluginInterfaceVersionXY
+      },
+      description: 'plugin-interface version',
+      outputKey: 'version'
+    }),
+
+    frontendVersionXy: (fdiVersion: string) => ({
       url: 'https://api.supertokens.io/0/frontend-driver-interface/dependency/frontend/latest/',
       params: {
         frontendName: 'website',
@@ -123,7 +175,8 @@ function getFetchDetails(inputs: InputType) {
       description: 'frontend X.Y.Z version',
       outputKey: 'version'
     }),
-    nodeVersionXY: (fdiVersion: string) => ({
+
+    nodeVersionXy: (fdiVersion: string) => ({
       url: 'https://api.supertokens.io/0/frontend-driver-interface/dependency/driver/latest/',
       params: {
         frontendName: 'auth-react',
@@ -144,7 +197,8 @@ function getFetchDetails(inputs: InputType) {
       description: 'node X.Y.Z version tag',
       outputKey: 'tag'
     }),
-    authReactVersionXY: (fdiVersion: string) => ({
+
+    authReactVersionXy: (fdiVersion: string) => ({
       url: 'https://api.supertokens.io/0/frontend-driver-interface/dependency/frontend/latest/',
       params: {
         frontendName: 'auth-react',
@@ -184,49 +238,86 @@ export async function run(): Promise<void> {
   const fetchDetails = getFetchDetails(inputs)
 
   if (cdiVersion) {
-    const coreVersion = await fetchWithApiKey(
-      fetchDetails.coreVersion(cdiVersion)
+    const coreVersionXy = await fetchWithApiKey(
+      fetchDetails.coreVersionXy(cdiVersion)
     )
-    core.setOutput('core-version', coreVersion)
+    core.setOutput('coreVersionXy', coreVersionXy)
+    core.info(`coreVersionXy=${coreVersionXy}`)
+
+    const coreTag = await fetchWithApiKey(fetchDetails.coreTag(coreVersionXy))
+    core.setOutput('coreTag', coreTag)
+    core.info(`coreTag=${coreTag}`)
+
+    const coreVersion = await fetchWithApiKey(
+      fetchDetails.coreVersion(coreVersionXy)
+    )
+    core.setOutput('coreVersion', coreVersion)
+    core.info(`coreVersion=${coreVersion}`)
+
+    const pluginInterfaceVersionXy = await fetchWithApiKey(
+      fetchDetails.pluginInterfaceVersionXy(cdiVersion)
+    )
+    core.setOutput('pluginInterfaceVersionXy', pluginInterfaceVersionXy)
+    core.info(`pluginInterfaceVersionXy=${pluginInterfaceVersionXy}`)
+
+    const pluginInterfaceTag = await fetchWithApiKey(
+      fetchDetails.pluginInterfaceTag(pluginInterfaceVersionXy)
+    )
+    core.setOutput('pluginInterfaceTag', pluginInterfaceTag)
+    core.info(`pluginInterfaceTag=${pluginInterfaceTag}`)
+
+    const pluginInterfaceVersion = await fetchWithApiKey(
+      fetchDetails.pluginInterfaceVersion(pluginInterfaceVersionXy)
+    )
+    core.setOutput('pluginInterfaceVersion', pluginInterfaceVersion)
+    core.info(`pluginInterfaceVersion=${pluginInterfaceVersion}`)
   }
 
   if (fdiVersion) {
-    const frontendVersionXY = await fetchWithApiKey(
-      fetchDetails.frontendVersionXY(fdiVersion)
+    const frontendVersionXy = await fetchWithApiKey(
+      fetchDetails.frontendVersionXy(fdiVersion)
     )
-    core.setOutput('frontend-version-xy', frontendVersionXY)
+    core.setOutput('frontendVersionXy', frontendVersionXy)
+    core.info(`frontendVersionXy=${frontendVersionXy}`)
 
     const frontendTag = await fetchWithApiKey(
-      fetchDetails.frontendTag(frontendVersionXY)
+      fetchDetails.frontendTag(frontendVersionXy)
     )
-    core.setOutput('frontend-tag', frontendTag)
+    core.setOutput('frontendTag', frontendTag)
+    core.info(`frontendTag=${frontendTag}`)
 
     const frontendVersion = await fetchWithApiKey(
-      fetchDetails.frontendVersion(frontendVersionXY)
+      fetchDetails.frontendVersion(frontendVersionXy)
     )
-    core.setOutput('frontend-version', frontendVersion)
+    core.setOutput('frontendVersion', frontendVersion)
+    core.info(`frontendVersion=${frontendVersion}`)
 
-    const nodeVersionXY = await fetchWithApiKey(
-      fetchDetails.nodeVersionXY(fdiVersion)
+    const nodeVersionXy = await fetchWithApiKey(
+      fetchDetails.nodeVersionXy(fdiVersion)
     )
-    core.setOutput('node-version-xy', nodeVersionXY)
+    core.setOutput('nodeVersionXy', nodeVersionXy)
+    core.info(`nodeVersionXy=${nodeVersionXy}`)
 
-    const nodeTag = await fetchWithApiKey(fetchDetails.nodeTag(nodeVersionXY))
-    core.setOutput('node-tag', nodeTag)
+    const nodeTag = await fetchWithApiKey(fetchDetails.nodeTag(nodeVersionXy))
+    core.setOutput('nodeTag', nodeTag)
+    core.info(`nodeTag=${nodeTag}`)
 
-    const authReactVersionXY = await fetchWithApiKey(
-      fetchDetails.authReactVersionXY(fdiVersion)
+    const authReactVersionXy = await fetchWithApiKey(
+      fetchDetails.authReactVersionXy(fdiVersion)
     )
-    core.setOutput('auth-react-version-xy', authReactVersionXY)
+    core.setOutput('authReactVersionXy', authReactVersionXy)
+    core.info(`authReactVersionXy=${authReactVersionXy}`)
 
     const authReactTag = await fetchWithApiKey(
-      fetchDetails.authReactTag(authReactVersionXY)
+      fetchDetails.authReactTag(authReactVersionXy)
     )
-    core.setOutput('auth-react-tag', authReactTag)
+    core.setOutput('authReactTag', authReactTag)
+    core.info(`authReactTag=${authReactTag}`)
 
     const authReactVersion = await fetchWithApiKey(
-      fetchDetails.authReactVersion(authReactVersionXY)
+      fetchDetails.authReactVersion(authReactVersionXy)
     )
-    core.setOutput('auth-react-version', authReactVersion)
+    core.setOutput('authReactVersion', authReactVersion)
+    core.info(`authReactVersion=${authReactVersion}`)
   }
 }

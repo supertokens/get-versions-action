@@ -38,24 +38,37 @@ inputs:
     default: DEV
 
 outputs:
-  core-version:
+  coreVersionXy:
     description: Supertokens-core version corresponding to CDI version
+  coreTag:
+    description: ''
+  coreVersion:
+    description: ''
 
-  frontend-version-xy:
+  pluginInterfaceVersionXy:
     description: ''
-  frontend-tag:
+  pluginInterfaceTag:
     description: ''
-  frontend-version:
+  pluginInterfacVersion:
     description: ''
-  node-version-xy:
+
+  frontendVersionXy:
     description: ''
-  node-tag:
+  frontendTag:
     description: ''
-  auth-react-version-xy:
+  frontendVersion:
     description: ''
-  auth-react-tag:
+
+  nodeVersionXy:
     description: ''
-  auth-react-version:
+  nodeTag:
+    description: ''
+
+  authReactVersionXy:
+    description: ''
+  authReactTag:
+    description: ''
+  authReactVersion:
     description: ''
 
 runs:
