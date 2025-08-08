@@ -7,6 +7,7 @@ type InputType = {
   corePlanType: string
   frontendMode: string
   fdiVersion: string
+  fetchFrontendVersions: boolean
   webJsInterfaceVersion: string
 }
 
@@ -20,6 +21,9 @@ function getInputs(): InputType {
 
     frontendMode: core.getInput('frontend-mode', { required: false }),
     fdiVersion: core.getInput('fdi-version', { required: false }),
+    fetchFrontendVersions: core.getBooleanInput('fetch-frontend-versions', {
+      required: false
+    }),
 
     webJsInterfaceVersion: core.getInput('web-js-interface-version', {
       required: false
@@ -255,7 +259,7 @@ function getFetchDetails(inputs: InputType) {
 
 export async function run(): Promise<void> {
   const inputs = getInputs()
-  const { fdiVersion, cdiVersion, webJsInterfaceVersion } = inputs
+  const { fdiVersion, cdiVersion, webJsInterfaceVersion, fetchFrontendVersions } = inputs
   const fetchDetails = getFetchDetails(inputs)
 
   if (cdiVersion) {
@@ -295,23 +299,25 @@ export async function run(): Promise<void> {
   }
 
   if (fdiVersion) {
-    const frontendVersionXy = await fetchWithApiKey(
-      fetchDetails.frontendVersionXy(fdiVersion)
-    )
-    core.setOutput('frontendVersionXy', frontendVersionXy)
-    core.info(`frontendVersionXy=${frontendVersionXy}`)
+    if (fetchFrontendVersions) {
+      const frontendVersionXy = await fetchWithApiKey(
+        fetchDetails.frontendVersionXy(fdiVersion)
+      )
+      core.setOutput('frontendVersionXy', frontendVersionXy)
+      core.info(`frontendVersionXy=${frontendVersionXy}`)
 
-    const frontendTag = await fetchWithApiKey(
-      fetchDetails.frontendTag(frontendVersionXy)
-    )
-    core.setOutput('frontendTag', frontendTag)
-    core.info(`frontendTag=${frontendTag}`)
+      const frontendTag = await fetchWithApiKey(
+        fetchDetails.frontendTag(frontendVersionXy)
+      )
+      core.setOutput('frontendTag', frontendTag)
+      core.info(`frontendTag=${frontendTag}`)
 
-    const frontendVersion = await fetchWithApiKey(
-      fetchDetails.frontendVersion(frontendVersionXy)
-    )
-    core.setOutput('frontendVersion', frontendVersion)
-    core.info(`frontendVersion=${frontendVersion}`)
+      const frontendVersion = await fetchWithApiKey(
+        fetchDetails.frontendVersion(frontendVersionXy)
+      )
+      core.setOutput('frontendVersion', frontendVersion)
+      core.info(`frontendVersion=${frontendVersion}`)
+    }
 
     const nodeVersionXy = await fetchWithApiKey(
       fetchDetails.nodeVersionXy(fdiVersion)
