@@ -78,7 +78,12 @@ async function fetchWithApiKey({
   const data = responseData[outputKey]
 
   if (!data) {
-    throw ErrorFactory(params, description, data, response.status)
+    throw ErrorFactory(
+      params,
+      description,
+      `${data} in response ${responseData}`,
+      response.status
+    )
   }
 
   return data
