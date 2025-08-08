@@ -102,8 +102,7 @@ outputs:
     description:
       Latest auth-react X.Y version corresponding to web-js interface version
   webJsReactTag:
-    description:
-      Latest auth-react tag corresponding to auth-react X.Y version
+    description: Latest auth-react tag corresponding to auth-react X.Y version
   webJsReactVersion:
     description:
       Latest auth-react X.Y.Z version corresponding to auth-react X.Y version

@@ -27253,7 +27253,13 @@ function getInputs() {
         coreMode: coreExports.getInput('core-mode', { required: false }),
         corePlanType: coreExports.getInput('core-plan-type', { required: false }),
         frontendMode: coreExports.getInput('frontend-mode', { required: false }),
-        fdiVersion: coreExports.getInput('fdi-version', { required: false })
+        fdiVersion: coreExports.getInput('fdi-version', { required: false }),
+        fetchFrontendVersions: coreExports.getBooleanInput('fetch-frontend-versions', {
+            required: false
+        }),
+        webJsInterfaceVersion: coreExports.getInput('web-js-interface-version', {
+            required: false
+        })
     };
 }
 function ErrorFactory(params, dataDescription, response, statusCode) {
@@ -27277,7 +27283,7 @@ async function fetchWithApiKey({ url, params, description, outputKey }) {
     const responseData = (await response.json());
     const data = responseData[outputKey];
     if (!data) {
-        throw ErrorFactory(params, description, data, response.status);
+        throw ErrorFactory(params, description, `${data} in response ${responseData}`, response.status);
     }
     return data;
 }
@@ -27426,12 +27432,22 @@ function getFetchDetails(inputs) {
             },
             description: 'auth-react frontend X.Y version',
             outputKey: 'version'
+        }),
+        webJsReactVersionXy: (webJsInterfaceVersion) => ({
+            url: 'https://api.supertokens.io/0/web-js-interface/dependency/frontend/latest',
+            params: {
+                frontendName: 'auth-react',
+                mode: inputs.frontendMode,
+                version: webJsInterfaceVersion
+            },
+            description: 'web-js-interface React X.Y version',
+            outputKey: 'frontend'
         })
     };
 }
 async function run() {
     const inputs = getInputs();
-    const { fdiVersion, cdiVersion } = inputs;
+    const { fdiVersion, cdiVersion, webJsInterfaceVersion, fetchFrontendVersions } = inputs;
     const fetchDetails = getFetchDetails(inputs);
     if (cdiVersion) {
         const coreVersionXy = await fetchWithApiKey(fetchDetails.coreVersionXy(cdiVersion));
@@ -27454,15 +27470,17 @@ async function run() {
         coreExports.info(`pluginInterfaceVersion=${pluginInterfaceVersion}`);
     }
     if (fdiVersion) {
-        const frontendVersionXy = await fetchWithApiKey(fetchDetails.frontendVersionXy(fdiVersion));
-        coreExports.setOutput('frontendVersionXy', frontendVersionXy);
-        coreExports.info(`frontendVersionXy=${frontendVersionXy}`);
-        const frontendTag = await fetchWithApiKey(fetchDetails.frontendTag(frontendVersionXy));
-        coreExports.setOutput('frontendTag', frontendTag);
-        coreExports.info(`frontendTag=${frontendTag}`);
-        const frontendVersion = await fetchWithApiKey(fetchDetails.frontendVersion(frontendVersionXy));
-        coreExports.setOutput('frontendVersion', frontendVersion);
-        coreExports.info(`frontendVersion=${frontendVersion}`);
+        if (fetchFrontendVersions) {
+            const frontendVersionXy = await fetchWithApiKey(fetchDetails.frontendVersionXy(fdiVersion));
+            coreExports.setOutput('frontendVersionXy', frontendVersionXy);
+            coreExports.info(`frontendVersionXy=${frontendVersionXy}`);
+            const frontendTag = await fetchWithApiKey(fetchDetails.frontendTag(frontendVersionXy));
+            coreExports.setOutput('frontendTag', frontendTag);
+            coreExports.info(`frontendTag=${frontendTag}`);
+            const frontendVersion = await fetchWithApiKey(fetchDetails.frontendVersion(frontendVersionXy));
+            coreExports.setOutput('frontendVersion', frontendVersion);
+            coreExports.info(`frontendVersion=${frontendVersion}`);
+        }
         const nodeVersionXy = await fetchWithApiKey(fetchDetails.nodeVersionXy(fdiVersion));
         coreExports.setOutput('nodeVersionXy', nodeVersionXy);
         coreExports.info(`nodeVersionXy=${nodeVersionXy}`);
@@ -27478,6 +27496,17 @@ async function run() {
         const authReactVersion = await fetchWithApiKey(fetchDetails.authReactVersion(authReactVersionXy));
         coreExports.setOutput('authReactVersion', authReactVersion);
         coreExports.info(`authReactVersion=${authReactVersion}`);
+    }
+    if (webJsInterfaceVersion) {
+        const webJsReactVersionXy = await fetchWithApiKey(fetchDetails.webJsReactVersionXy(webJsInterfaceVersion));
+        coreExports.setOutput('webJsReactVersionXy', webJsReactVersionXy);
+        coreExports.info(`webJsReactVersionXy=${webJsReactVersionXy}`);
+        const webJsReactTag = await fetchWithApiKey(fetchDetails.authReactTag(webJsReactVersionXy));
+        coreExports.setOutput('webJsReactTag', webJsReactTag);
+        coreExports.info(`webJsReactTag=${webJsReactTag}`);
+        const webJsReactVersion = await fetchWithApiKey(fetchDetails.authReactVersion(webJsReactVersionXy));
+        coreExports.setOutput('webJsReactVersion', webJsReactVersion);
+        coreExports.info(`webJsReactVersion=${webJsReactVersion}`);
     }
 }
 

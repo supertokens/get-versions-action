@@ -12,8 +12,6 @@ type InputType = {
 }
 
 function getInputs(): InputType {
-  core.info(`fetchFrontendVersions=${core.getBooleanInput('fetch-frontend-versions', {required: false})}`)
-
   return {
     driverName: core.getInput('driver-name', { required: true }),
 
@@ -261,14 +259,12 @@ function getFetchDetails(inputs: InputType) {
 
 export async function run(): Promise<void> {
   const inputs = getInputs()
-  core.info(`Inputs: ${JSON.stringify(inputs)}`)
   const {
     fdiVersion,
     cdiVersion,
     webJsInterfaceVersion,
     fetchFrontendVersions
   } = inputs
-  core.info(`fetchFrontendVersions=${fetchFrontendVersions}`)
   const fetchDetails = getFetchDetails(inputs)
 
   if (cdiVersion) {
