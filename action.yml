@@ -37,7 +37,7 @@ inputs:
     required: false
     default: DEV
 
-  web-js-interfce-version:
+  web-js-interface-version:
     description: Web JS Interface Version to use
     required: false
     default: ''
