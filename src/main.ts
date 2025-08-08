@@ -7,6 +7,7 @@ type InputType = {
   corePlanType: string
   frontendMode: string
   fdiVersion: string
+  webJsInterfaceVersion: string
 }
 
 function getInputs(): InputType {
@@ -18,7 +19,11 @@ function getInputs(): InputType {
     corePlanType: core.getInput('core-plan-type', { required: false }),
 
     frontendMode: core.getInput('frontend-mode', { required: false }),
-    fdiVersion: core.getInput('fdi-version', { required: false })
+    fdiVersion: core.getInput('fdi-version', { required: false }),
+
+    webJsInterfaceVersion: core.getInput('web-js-interface-version', {
+      required: false
+    })
   }
 }
 
@@ -228,13 +233,24 @@ function getFetchDetails(inputs: InputType) {
       },
       description: 'auth-react frontend X.Y version',
       outputKey: 'version'
+    }),
+
+    webJsReactVersionXy: (webJsInterfaceVersion: string) => ({
+      url: 'https://api.supertokens.io/0/web-js-interface/dependency/frontend/latest',
+      params: {
+        frontendName: 'auth-react',
+        mode: inputs.frontendMode,
+        version: webJsInterfaceVersion
+      },
+      description: 'web-js-interface React X.Y version',
+      outputKey: 'frontend'
     })
   }
 }
 
 export async function run(): Promise<void> {
   const inputs = getInputs()
-  const { fdiVersion, cdiVersion } = inputs
+  const { fdiVersion, cdiVersion, webJsInterfaceVersion } = inputs
   const fetchDetails = getFetchDetails(inputs)
 
   if (cdiVersion) {
@@ -319,5 +335,25 @@ export async function run(): Promise<void> {
     )
     core.setOutput('authReactVersion', authReactVersion)
     core.info(`authReactVersion=${authReactVersion}`)
+  }
+
+  if (webJsInterfaceVersion) {
+    const webJsReactVersionXy = await fetchWithApiKey(
+      fetchDetails.webJsReactVersionXy(webJsInterfaceVersion)
+    )
+    core.setOutput('webJsReactVersionXy', webJsReactVersionXy)
+    core.info(`webJsReactVersionXy=${webJsReactVersionXy}`)
+
+    const webJsReactTag = await fetchWithApiKey(
+      fetchDetails.authReactTag(webJsReactVersionXy)
+    )
+    core.setOutput('webJsReactTag', webJsReactTag)
+    core.info(`webJsReactTag=${webJsReactTag}`)
+
+    const webJsReactVersion = await fetchWithApiKey(
+      fetchDetails.authReactVersion(webJsReactVersionXy)
+    )
+    core.setOutput('webJsReactVersion', webJsReactVersion)
+    core.info(`webJsReactVersion=${webJsReactVersion}`)
   }
 }
